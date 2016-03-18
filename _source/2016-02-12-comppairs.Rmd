@@ -1,0 +1,45 @@
+---
+layout: post
+title:  "Competition Pairs"
+excerpt: "Who competed together?"
+category: stats
+date:   2016-02-18 14:02:45 +0100
+---
+
+```{r setup, include=FALSE, cache=FALSE, echo=FALSE}
+library(graphics)
+library(datasets)
+library(dplyr)
+results = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_results.tsv", sep = "\t", quote = "", header = TRUE)
+persons = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_Persons.tsv", sep = "\t",quote = "", header = TRUE)
+competitions = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_Competitions.tsv", sep = "\t", quote = "", header = TRUE, fill = TRUE)
+```
+
+
+```{r data, echo=FALSE}
+personComps <- results[!duplicated(results[,c('personId','competitionId')]),]
+compPairs <- data.frame(personId = personComps$personId, competitionId = personComps$competitionId)
+
+compPairs <- compPairs %>%
+  left_join(compPairs, by = "competitionId") %>%
+  filter( as.character(personId.x) < as.character(personId.y)) %>%
+  group_by(personId.x, personId.y) %>%
+  summarise(count = n())
+
+compPairs <- subset(compPairs, count > 45)
+compPairs <- merge(x = compPairs, y = persons[which(persons$subid == 1), c("id","name")], by.x="personId.x", by.y="id",all.x = F)
+compPairs <- merge(x = compPairs, y = persons[which(persons$subid == 1), c("id","name")], by.x="personId.y", by.y="id",all.y = F)
+compPairs <- compPairs[order(compPairs$count, decreasing = T),]
+
+compPairs$ranks <- rank(compPairs$count*-1, ties.method = "min")
+
+compPairs$name.x <- paste("<a href=\"https://www.worldcubeassociation.org/results/p.php?i=", compPairs[,"personId.x"],  "\">", compPairs[,"name.x"], "</a>", sep="")
+compPairs$name.y <- paste("<a href=\"https://www.worldcubeassociation.org/results/p.php?i=", compPairs[,"personId.y"],  "\">", compPairs[,"name.y"], "</a>", sep="")
+rownames(compPairs) = NULL
+```
+
+```{r table, echo=FALSE}
+knitr::kable(compPairs[,c("ranks", "name.x", "name.y", "count")], col.names = c("Rank", "Name 1", "Name 2", "Competitions"), align="r")
+
+```
+

@@ -1,0 +1,32 @@
+---
+layout: post
+title:  "Maps of competition locations"
+excerpt: "Maps of competition locations form 1982 - 2016"
+category: stats
+date:   2016-02-15 14:02:45 +0100
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(dplyr)
+library(htmltools)
+competitions = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_Competitions.tsv", sep = "\t", quote = "", header = TRUE, fill = TRUE)
+
+competitionMap <- data.frame(Name = as.character(competitions$name), City = as.character(competitions$cityName), Year = competitions$year, latitude = competitions$latitude/1000000.0, longitude = competitions$longitude/1000000.0)
+competitionMap <- competitionMap[complete.cases(competitionMap),]
+years = c(sort(unique(competitionMap$Year)))
+```
+
+
+```{r echo=F}
+  createMaps<-function(x){
+        distinct_by_stations<-distinct(x,City)
+        lflt<-leaflet(data = distinct_by_stations) %>% addTiles() %>%     addMarkers(~longitude,~latitude,popup=~as.character(City))
+        lflt <- list(tags$h3(unique(x$Year)), lflt)
+  }
+
+  htmltools::tagList(lapply(split(competitionMap,competitionMap$Year),function(x){createMaps(x)}))
+```
+
+
