@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Countries"
-excerpt: "How many newcomers competed where and when?"
+excerpt: "How many competed when?"
 category: stats
 date:   2016-03-18 14:02:45 +0100
 ---

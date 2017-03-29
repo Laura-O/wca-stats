@@ -1,0 +1,58 @@
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(xtable)
+options(digits=4)
+
+competitions = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_Competitions.tsv", sep = "\t", quote = "", header = TRUE, fill = TRUE, comment.char = "")
+results = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_export_results.tsv", sep = "\t", quote = "", header = TRUE, fill = TRUE, comment.char = "")
+results_years <- left_join(results, competitions[,c("id","year")], by = c("competitionId" = "id"))
+results_years <- gather(results_years[,c(1,2,11:15,18)], "type", "result", 3:7)
+
+
+ctime <- function(arg1) {
+  if (arg1 < 100) {
+    arg1 <- arg1
+  } else if (arg1 < 6000) {
+    arg1 <- format(arg1/100, nsmall = 2)
+  } else {
+    arg1 <- format(as.POSIXct('0001-01-01 00:00:00.000') + arg1/100, "%M:%OS")
+  }
+  return(arg1)
+} 
+```
+
+```{r overview, results='asis', echo=F}
+cat("<section id=\"table-of-contents\" class=\"toc\">
+  <header>
+    <h3>Overview</h3>
+  </header>
+<div id=\"drawer\" markdown=\"1\">
+*  Auto generated table of contents
+{:toc}
+</div>
+</section>")
+```
+
+```{r pressure, results='asis', echo=FALSE}
+
+events <- c("333", "222", "444", "555", "666", "777", "333bf", "333ft", "333oh", "333fm", "clock", "minx", "pyram", "skewb", "sq1")
+
+for (i in events){
+  
+  bla <- results_years[results_years$eventId == i, ] %>%
+     group_by(Year = year) %>%
+      summarise(Mean=ctime(mean(result[result >0])),
+            Solves=length(result[result >0]),
+            DNFs=length(result[result == -1]),
+            DNSs=length(result[result == -2]),
+            Total=length(result[result != 0]))
+  
+  cat("\n")
+  cat("\n")
+  cat("### <span class=\"cubing-icon icon-", i, "\"></span> ", i, sep="")
+  cat("\n")
+  print(knitr::kable(bla, padding = 2, align="r"))
+}
+```
