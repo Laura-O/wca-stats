@@ -3,7 +3,7 @@ layout: post
 title:  "Maps of competition locations"
 excerpt: "Maps of competition locations form 1982 - 2017"
 category: stats
-date:   2016-02-15 14:02:45 +0100
+date:   2017-02-15 14:02:45 +0100
 ---
 
 ```{r setup, include=FALSE}

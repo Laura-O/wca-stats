@@ -3,7 +3,7 @@ layout: post
 title:  "Competition Pairs"
 excerpt: "Who competed together?"
 category: stats
-date:   2016-03-18 14:02:45 +0100
+date:   2017-03-18 14:02:45 +0100
 ---
 
 ```{r setup, include=FALSE, cache=FALSE, echo=FALSE}
