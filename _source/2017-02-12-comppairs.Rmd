@@ -40,6 +40,4 @@ rownames(compPairs) = NULL
 
 ```{r table, echo=FALSE}
 knitr::kable(compPairs[,c("ranks", "name.x", "name.y", "count")], col.names = c("Rank", "Name 1", "Name 2", "Competitions"), align="r")
-
 ```
-

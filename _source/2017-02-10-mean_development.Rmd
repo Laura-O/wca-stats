@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Means over the years"
-excerpt: "Overview on mean results developed over the years."
+excerpt: "Overview on mean results over the years."
 category: stats
 date:   2016-02-07 14:02:45 +0100
 ---
@@ -18,7 +18,7 @@ results = read.table("/Users/lohrndorf/Dropbox/Lokal/Privat/cubing-scripts/WCA_e
 results_years <- left_join(results, competitions[,c("id","year")], by = c("competitionId" = "id"))
 results_years <- gather(results_years[,c(1,2,11:15,18)], "type", "result", 3:7)
 
-
+# Format results correctly
 ctime <- function(arg1) {
   if (arg1 < 100) {
     arg1 <- arg1
@@ -31,7 +31,7 @@ ctime <- function(arg1) {
 } 
 ```
 
-```{r overview, results='asis', echo=F}
+```{r index, results='asis', echo=F}
 cat("<section id=\"table-of-contents\" class=\"toc\">
   <header>
     <h3>Overview</h3>
@@ -43,16 +43,11 @@ cat("<section id=\"table-of-contents\" class=\"toc\">
 </section>")
 ```
 
-
-
-
-```{r pressure, results='asis', echo=FALSE}
-
+```{r results, results='asis', echo=FALSE}
 events <- c("333", "222", "444", "555", "666", "777", "333bf", "333ft", "333oh", "333fm", "clock", "minx", "pyram", "skewb", "sq1")
 
 for (i in events){
-  
-  bla <- results_years[results_years$eventId == i, ] %>%
+  calculate_stats <- results_years[results_years$eventId == i, ] %>%
      group_by(Year = year) %>%
       summarise(Mean=ctime(mean(result[result >0])),
             Solves=length(result[result >0]),
@@ -64,9 +59,6 @@ for (i in events){
   cat("\n")
   cat("### <span class=\"cubing-icon icon-", i, "\"></span> ", i, sep="")
   cat("\n")
-  print(knitr::kable(bla, padding = 2, align="r"))
+  print(knitr::kable(calculate_stats, padding = 2, align="r"))
 }
-  
-
-
 ```
